@@ -4,11 +4,11 @@
 
 ;; Binary Tree Constructors
 (defun make-bin-tree-leaf (E)
-  "Create a leaf."
+  "Create a leaf to store element E."
   (list E))
 
 (defun make-bin-tree-node (E B1 B2)
-  "Create a node with element K, left subtree B1 and right subtree B2."
+  "Create a node with element E, left subtree B1 and right subtree B2."
   (list E B1 B2))
 
 ;; Selectors for binary trees 
