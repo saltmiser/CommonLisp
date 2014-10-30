@@ -48,13 +48,13 @@
 ;;			      (make-bin-tree-leaf 8)))
 ;;
 
-(defun bin-tree-member-p (B E)
-  "Test if E is an element in binary tree B."
-  (if (bin-tree-leaf-p B)
-      (equal E (bin-tree-leaf-element B))
-      (or (equal E (bin-tree-node-element B))
-	  (bin-tree-member-p (bin-tree-node-left B) E)
-	  (bin-tree-member-p (bin-tree-node-right B) E))))
+;;(defun bin-tree-member-p (B E)
+;;  "Test if E is an element in binary tree B."
+;;  (if (bin-tree-leaf-p B)
+;;      (equal E (bin-tree-leaf-element B))
+;;      (or (equal E (bin-tree-node-element B))
+;;	  (bin-tree-member-p (bin-tree-node-left B) E)
+;;	  (bin-tree-member-p (bin-tree-node-right B) E))))
 
 ;; Below is a slightly-more readable version when using (trace)
 
