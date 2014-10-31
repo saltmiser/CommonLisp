@@ -62,13 +62,13 @@
   "Test if E is an element in binary tree B."
   (if (bin-tree-leaf-p B)
       (equal E (bin-tree-leaf-element B))
-    (let
-	((elmt  (bin-tree-node-element B))
-	 (left  (bin-tree-node-left    B))
-	 (right (bin-tree-node-right   B)))
-      (or (equal E elmt)
-	  (bin-tree-member-p left E)
-	  (bin-tree-member-p right E)))))
+      (let
+	  ((elmt  (bin-tree-node-element B))
+	   (left  (bin-tree-node-left    B))
+	   (right (bin-tree-node-right   B)))
+	(or (equal E elmt)
+	    (bin-tree-member-p left E)
+	    (bin-tree-member-p right E)))))
 
 ;; (trace bin-tree-member-p)
 ;; (bin-tree-member-p '(+ (* (2) (3)) (- (7) (8))) 7)
@@ -175,9 +175,9 @@
 	    (make-bin-tree-node elmt
 				(make-bin-tree-leaf elmt)
 				(make-bin-tree-leaf E))))))
- 
 
-  
+
+
 ;; (trace bst-insert bst-nonempty-insert bst-leaf-insert)
 ;; (bst-insert '(2 (1 (1) (2)) (3 (3) (4))) 2.5)
 

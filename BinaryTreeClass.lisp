@@ -24,25 +24,44 @@
     :accessor root-node
     :documentation "The root BST node for this BST.")))
 
+(defgeneric bst-contains (value search-tree))
+(defmethod bst-contains (value (search-tree binary-search-tree))
+  (let ((rootnode (root-node search-tree)))
+    (labels ((inner-bst-contains (value search-tree)
+	       (if (eq (stored-value search-tree) nil)
+		   nil
+		   (if (eq (stored-value search-tree) value)
+		       t
+		       (if (< value (stored-value search-tree))
+			   (if (eq (left-child search-tree) nil)
+			       nil
+			       (inner-bst-contains
+				value (left-child search-tree)))
+			   
+			   (if (eq (right-child search-tree) nil)
+			       nil
+			       (inner-bst-contains 
+				value (right-child search-tree)))
+			   )))))
+      (inner-bst-contains value rootnode))))
+
 (defgeneric bst-insert (value search-tree))
 (defmethod bst-insert (value (search-tree binary-search-tree))
   (let ((rootnode (root-node search-tree)))
-  (labels ((inner-bst-insert (value search-tree)
-	     (if (eq (stored-value search-tree) nil)
-		 (setf (stored-value search-tree) value)
-		 (if (< value (stored-value search-tree))
-		     (if (eq (left-child search-tree) nil)
-			 (setf (left-child search-tree) 
-			       (make-instance 'binary-tree-node
-					:stored-value value))
-			 (inner-bst-insert value (left-child search-tree)))
-		     (if (eq (right-child search-tree) nil)
-			 (setf (right-child search-tree) 
-			       (make-instance 'binary-tree-node
-					:stored-value value))
-			 (inner-bst-insert value (right-child search-tree))))
-		 ))) 
-    (inner-bst-insert value rootnode))))
+    (labels ((inner-bst-insert (value search-tree)
+	       (if (eq (stored-value search-tree) nil)
+		   (setf (stored-value search-tree) value)
+		   (if (< value (stored-value search-tree))
+		       (if (eq (left-child search-tree) nil)
+			   (setf (left-child search-tree) 
+				 (make-instance 'binary-tree-node
+						:stored-value value))
+			   (inner-bst-insert value (left-child search-tree)))
+		       (if (eq (right-child search-tree) nil)
+			   (setf (right-child search-tree) 
+				 (make-instance 'binary-tree-node
+						:stored-value value))
+			   (inner-bst-insert value (right-child search-tree))))
+		   )))
+      (inner-bst-insert value rootnode))))
 
-
-	     
