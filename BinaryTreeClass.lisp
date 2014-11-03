@@ -22,7 +22,12 @@
     :initarg :root-node
     :initform (make-instance 'binary-tree-node)
     :accessor root-node
-    :documentation "The root BST node for this BST.")))
+    :documentation "The root BST node for this BST.")
+   (size ;; Size is a "private static" integer, and insert/remove adjusts this
+    :allocation :class 
+    :initform 0
+    :reader size ;; A public reader is provided, however!
+    :documentation "The size of the BST.")))
 
 (defgeneric bst-contains (value search-tree))
 (defmethod bst-contains (value (search-tree binary-search-tree))
@@ -63,5 +68,7 @@
 						:stored-value value))
 			   (inner-bst-insert value (right-child search-tree))))
 		   )))
-      (inner-bst-insert value rootnode))))
+      (inner-bst-insert value rootnode)))
+  (setf (slot-value search-tree 'size) (+ 1 (slot-value search-tree 'size))))
+
 
