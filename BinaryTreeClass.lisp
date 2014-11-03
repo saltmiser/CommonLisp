@@ -25,17 +25,16 @@
 (defclass binary-search-tree ()
   ((root-node
     :initarg :root-node
-    :initform (make-instance 'binary-tree-node)
+    :initform nil
     :accessor root-node
     :documentation "The root BST node for this BST.")
    (size ;; Size is a "private static" integer, and insert/remove adjusts this
-    :allocation :class 
     :initform 0
     :reader size ;; A public reader is provided, however!
     :documentation "The size of the BST.")
    (lazy-deletion
     :initarg :lazy-deletion
-    :initform (error "Specify nil or T for lazy-deletion parameter.")
+    :initform nil
     :reader lazy-deletion ;; public reader since this may not be changed
     :documentation "Does this BST use lazy deletion?")))
 
@@ -64,7 +63,11 @@
 
 (defmethod bst-empty-p ((search-tree binary-search-tree))
   "Test whether a tree is empty.  Returns T if tree is empty."
-  (= (size search-tree) 0))
+  (or (null search-tree) (= (size search-tree) 0)))
+
+(defmethod bst-empty-p ((search-tree t))
+  "When search-tree is nil, this method is invoked to tell us."
+  (null search-tree))
 
 (defmethod bst-member-p ((search-tree binary-search-tree) value)
   "A search method.  Returns T if value if BST contains the value."
@@ -75,14 +78,59 @@
 		 (if (<= E (stored-value B))
 		     (bst-nonempty-member-p (left-child B) E)
 		     (bst-nonempty-member-p (right-child B) E))))
-	   (bst-member-p (B E)
+	   (bst-member-p-driver (B E)
 	     (if (bst-empty-p B)
 		 nil
 		 (bst-nonempty-member-p B E))))
-    (bst-member-p search-tree value)))
+    (if (or (bst-tree-node-p search-tree) (bst-tree-leaf-p search-tree))
+	(bst-member-p-driver search-tree value)
+	(bst-member-p-driver (root-node search-tree) value))))
 
 (defmethod bst-insert ((search-tree binary-search-tree) value)
-  nil)
+  "Into the BST insert the value."  
+  (labels (
+	   (make-bin-tree-leaf (E)
+	     (make-instance 'binary-tree-leaf :stored-value E))
+	   (make-bin-tree-node (E B1 B2)
+	     (make-instance 'binary-tree-node 
+			    :left-child B1
+			    :right-child B2
+			    :stored-value E))
+	   (bst-leaf-insert (L E)
+	     (let ((elmt (stored-value L)))
+	       (if (= E elmt)
+		   L
+		   (if (< E elmt)
+		       (make-bin-tree-node E
+					   (make-bin-tree-leaf E)
+					   (make-bin-tree-leaf elmt))
+		       (make-bin-tree-node elmt
+					   (make-bin-tree-leaf elmt)
+					   (make-bin-tree-leaf E))))))
+
+	   (bst-nonempty-insert (B E)
+	     (if (bst-tree-leaf-p B)
+		 (bst-leaf-insert B E)
+		 (let ((elmt (stored-value B))
+		       (left (left-child B))
+		       (right (right-child B)))
+		   (if (<= E (stored-value B))
+		       (make-bin-tree-node elmt
+					   (bst-nonempty-insert 
+					    (left-child B) E) 
+					   right)
+		       (make-bin-tree-node elmt
+					   left
+					   (bst-nonempty-insert
+					    (right-child B) E))))))
+	   (bst-insert-driver (B E)
+	     (if (bst-empty-p B)
+		 (make-bin-tree-leaf E)
+		 (bst-nonempty-insert B E))))
+  (setf (root-node search-tree)  (if (or (bst-tree-node-p search-tree) (bst-tree-leaf-p search-tree))
+	(bst-insert-driver search-tree value)
+	(bst-insert-driver (root-node search-tree) value)))
+  (setf (slot-value search-tree 'size) (+ 1 (size search-tree)))))
 
 (defmethod bst-remove ((search-tree binary-search-tree) value)
   nil)
