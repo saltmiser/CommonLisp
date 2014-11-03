@@ -3,7 +3,7 @@
 (setf (aref x 0) "A value")
 
 ;; Vectors are one-dimensional arrays
-(vector 1 2 3 4 5 6) ;; Returns array containing the &rest values
+(search (vector 3) (vector 1 2 3 4 5 6)) ;; Search for a sub-vector
 
 ;; Three dimensional arrays
 (defparameter WORLD 
@@ -22,4 +22,9 @@
 (defun infinite-add (&rest numbers) 
   (apply #'+ numbers))
 
+
+;; Do something n times
+(defun count-to-n (n)
+  (dotimes (i n)
+    (princ i)))
 

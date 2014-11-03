@@ -3,7 +3,12 @@
     :initarg :stored-value
     :initform nil
     :accessor stored-value
-    :documentation "A final value which is actually stored in the BST.")))
+    :documentation "A final value which is actually stored in the BST.")
+   (lazy-deleted
+    :initarg :lazy-deleted
+    :initform nil
+    :accessor lazy-deleted
+    :documentation "If using lazy deletion, T if this leaf is lazy deleted")))
 
 (defclass binary-tree-node (binary-tree-leaf)
   ((left-child
@@ -27,48 +32,30 @@
     :allocation :class 
     :initform 0
     :reader size ;; A public reader is provided, however!
-    :documentation "The size of the BST.")))
+    :documentation "The size of the BST.")
+   (lazy-deletion
+    :initarg :lazy-deletion
+    :initform (error "Specify nil or T for lazy-deletion parameter.")
+    :reader lazy-deletion ;; public reader since this may not be changed
+    :documentation "Does this BST use lazy deletion?")))
 
-(defgeneric bst-contains (value search-tree))
-(defmethod bst-contains (value (search-tree binary-search-tree))
-  (let ((rootnode (root-node search-tree)))
-    (labels ((inner-bst-contains (value search-tree)
-	       (if (eq (stored-value search-tree) nil)
-		   nil
-		   (if (eq (stored-value search-tree) value)
-		       t
-		       (if (< value (stored-value search-tree))
-			   (if (eq (left-child search-tree) nil)
-			       nil
-			       (inner-bst-contains
-				value (left-child search-tree)))
-			   
-			   (if (eq (right-child search-tree) nil)
-			       nil
-			       (inner-bst-contains 
-				value (right-child search-tree)))
-			   )))))
-      (inner-bst-contains value rootnode))))
+(defgeneric bst-make-empty (search-tree))
+(defgeneric bst-empty-p (search-tree))
+(defgeneric bst-member-p (search-tree value))
+(defgeneric bst-insert (search-tree value))
+(defgeneric bst-remove (search-tree value))
 
-(defgeneric bst-insert (value search-tree))
-(defmethod bst-insert (value (search-tree binary-search-tree))
-  (let ((rootnode (root-node search-tree)))
-    (labels ((inner-bst-insert (value search-tree)
-	       (if (eq (stored-value search-tree) nil)
-		   (setf (stored-value search-tree) value)
-		   (if (< value (stored-value search-tree))
-		       (if (eq (left-child search-tree) nil)
-			   (setf (left-child search-tree) 
-				 (make-instance 'binary-tree-node
-						:stored-value value))
-			   (inner-bst-insert value (left-child search-tree)))
-		       (if (eq (right-child search-tree) nil)
-			   (setf (right-child search-tree) 
-				 (make-instance 'binary-tree-node
-						:stored-value value))
-			   (inner-bst-insert value (right-child search-tree))))
-		   )))
-      (inner-bst-insert value rootnode)))
-  (setf (slot-value search-tree 'size) (+ 1 (slot-value search-tree 'size))))
+(defmethod bst-make-empty ((search-tree binary-search-tree))
+  (setf (root-node search-tree) nil))
 
+(defmethod bst-empty-p ((search-tree binary-search-tree))
+  nil)
 
+(defmethod bst-member-p ((search-tree binary-search-tree) value)
+  nil)
+
+(defmethod bst-insert ((search-tree binary-search-tree) value)
+  nil)
+
+(defmethod bst-remove ((search-tree binary-search-tree) value)
+  nil)
