@@ -39,20 +39,47 @@
     :reader lazy-deletion ;; public reader since this may not be changed
     :documentation "Does this BST use lazy deletion?")))
 
+(defparameter *bst-node-type* (make-instance 'binary-tree-node))
+(defparameter *bst-leaf-type* (make-instance 'binary-tree-leaf))
+
+(defgeneric bst-tree-leaf-p (value))
+(defgeneric bst-tree-node-p (value))
 (defgeneric bst-make-empty (search-tree))
 (defgeneric bst-empty-p (search-tree))
 (defgeneric bst-member-p (search-tree value))
 (defgeneric bst-insert (search-tree value))
 (defgeneric bst-remove (search-tree value))
 
+(defmethod bst-tree-leaf-p (value)
+  "Test if this value is a BST tree leaf."
+  (eq (class-of *bst-leaf-type*) value))
+
+(defmethod bst-tree-node-p (value)
+  "Test if this value is a BST tree search node."
+  (eq (class-of *bst-node-type*) value))
+
 (defmethod bst-make-empty ((search-tree binary-search-tree))
+  "Make an empty BST.  If the BST had something in it, GC will delete it!"
   (setf (root-node search-tree) nil))
 
 (defmethod bst-empty-p ((search-tree binary-search-tree))
-  nil)
+  "Test whether a tree is empty.  Returns T if tree is empty."
+  (= (size search-tree) 0))
 
 (defmethod bst-member-p ((search-tree binary-search-tree) value)
-  nil)
+  "A search method.  Returns T if value if BST contains the value."
+  (labels (
+	   (bst-nonempty-member-p (B E)
+	     (if (bst-tree-leaf-p B)
+		 (= E (stored-value B))
+		 (if (<= E (stored-value B))
+		     (bst-nonempty-member-p (left-child B) E)
+		     (bst-nonempty-member-p (right-child B) E))))
+	   (bst-member-p (B E)
+	     (if (bst-empty-p B)
+		 nil
+		 (bst-nonempty-member-p B E))))
+    (bst-member-p search-tree value)))
 
 (defmethod bst-insert ((search-tree binary-search-tree) value)
   nil)
