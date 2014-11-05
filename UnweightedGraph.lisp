@@ -4,16 +4,20 @@
 (defun hash-keys (hash-table)
   (loop for key being the hash-keys of hash-table collect key))
 
-(defclass node ()
+(defclass vertex ()
   ((stored-value
     :initarg :stored-value
     :initform nil
     :accessor stored-value
-    :documentation "The item to be stored at this node.")))
-)
+    :documentation "The item to be stored at this node.")
+   (distance-value
+    :initarg :distance-value
+    :initform nil
+    :accessor distance-value
+    :documentation "Searching for shortest paths will require a distance attribute.  There is no need to create dedicated graphs for searching.")))
 
-(defclass edge ()
-  ((connects-two-nodes node-list
+(defclass unweighted-edge ()
+  ((connects-two-nodes 
     :initarg :node-list
     :initform (error "An edge connects two nodes.")
     :accessor connects-two-nodes
@@ -21,10 +25,15 @@
     )))
 
 (defclass graph ()
-  ((node-graph
+  ((vertex-edge-map
     :initform (make-hash-table)
-    :accessor node-list
-    :documentation "The hash table where nodes are the key and a list of edges are the value.")))
+    :accessor vertex-edge-map
+    :documentation "The hash table where vertex objects are the key and a list of edges are the value.")
+   (vertex-map
+    :initform (make-hash-table)
+    :accessor vertex-map
+    :documentation "The hash table where vertex values are mapped to each vertex, this is provided as a convienience for using vertex-edge-map.")))
 
-
-
+(defgeneric add-vertex (g vertex-value))
+(defgeneric connect-nodes (g first-vertex second-vertex))
+(defgeneric traverse-graph (g start-vertex end-vertex function))
