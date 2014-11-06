@@ -57,13 +57,17 @@
 	  (v1-edges (gethash v1 edge-map))
 	  (v2-edges (gethash v2 edge-map)))
       (progn 
-	(if (and v1-edges (find v1 (connects-two-nodes v1-edges)))
+	(if (and (> (list-length v1-edges) 0) 
+		 (find v1 (connects-two-nodes v1-edges)))
 	    nil
 	    (setf v1-edges (append v1-edges (list newedge))))
-	(if (and v2-edges (find v2 (connects-two-nodes v2-edges)))
+	(if (and (> (list-length v2-edges) 0) 
+		 (find v2 (connects-two-nodes v2-edges)))
 	    nil
 	    (setf v2-edges (append v2-edges (list newedge))))
-	nil))))
+	(setf (gethash v1 edge-map) v1-edges)
+	(setf (gethash v2 edge-map) v2-edges)
+	(setf (vertex-edge-map g) edge-map)))))
 
 
 (setf myg (make-instance 'graph))
@@ -72,4 +76,5 @@
 (connect-nodes myg (gethash 'HELLO (vertex-map myg))
 	       (gethash 'GOODBYE (vertex-map myg)))
 
-
+(princ (gethash (gethash 'HELLO (vertex-map myg)) (vertex-edge-map myg)))
+(princ (connects-two-nodes (car (gethash (gethash 'HELLO (vertex-map myg)) (vertex-edge-map myg)))))
