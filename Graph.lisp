@@ -2,8 +2,9 @@
 (defun hash-keys (hash-table)
   (loop for key being the hash-keys of hash-table collect key))
 
-
-
+;; A vertex class which contains a localized value (stored-value) 
+;; and a hash table which is keyed by other vertices which index
+;; to edge values (i.e., actual edge objects)
 (defclass vertex ()
   ((stored-value
     :initarg :stored-value
@@ -29,4 +30,17 @@
   ((connected-nodes
     :initarg :connected-nodes
     :initform (error "Please define an empty structure to precedent how you will store connected nodes."))))
-    
+
+;; The graph class contains the hash table which is keyed by verticies
+;; and allows access to a list of edge objects.  
+(defclass graph ()
+  ((vertex-edge-table
+    :initform (make-hash-table)
+    :accessor vertex-edge-table
+    :documentation "Provides an accessor to the vertex/edge (key/value) table.")
+   (symbol-vertex-table
+    :initform (make-hash-table)
+    :accessor symbol-vertex-table
+    :documentation "A convenience table to store symbol/vertex (key/symbol) values.")))
+
+
