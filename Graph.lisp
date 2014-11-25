@@ -47,15 +47,15 @@
 ;; graph "grph" objects which are made up of vertex "vrtx" and "edge" objects.  
 ;;
 ;; Add new vertex to graph with stored-value.
-(defgeneric add-vertex (grph vrtx))
-(defgeneric add-vertex-by-symbol (grph vrtx-symbol vrtx-stored-value))
+(defgeneric add-vertex (grph vrtx)) ;; DONE
+(defgeneric add-vertex-by-symbol (grph vrtx-symbol vrtx-stored-value)) ;; DONE
 ;; Add new edge from first-vrtx to second-vrtx with edge-weight.
 (defgeneric connect (grph first-vrtx second-vrtx edge-weight))
 (defgeneric connect-by-symbols (grph 1-vrtx 2-vrtx edge-weight))
 ;; Return a list of all neighbors from a vertex.
-(defgeneric vertex-neighbors (grph vrtx))
-(defgeneric vertex-neighbors-by-symbol (grph symbol)) ;; Convenience methods.
-(defgeneric vertex-neighbors-by-symbol-return-symbols (grph vrtx))
+(defgeneric vertex-neighbors (grph vrtx)) ;; DONE
+(defgeneric vertex-neighbors-by-symbol (grph symbol)) ;; DONE
+(defgeneric vertex-neighbors-by-symbol-return-symbols (grph symbol)) ;; DONE
 ;; Traverse graph using shortest path and apply a function along the way.
 ;; Returns the path length. (Side-effect ridden!).
 (defgeneric graph-search-apply-fn (grph start-vrtx end-vrtx function)) 
@@ -63,11 +63,41 @@
 ;; along the way.  Returns said collected list. (Very functional!)
 (defgeneric graph-search-collect-fn (grph start-vrtx end-vrtx function))
 ;; Return the vertex count in a graph.
-(defgeneric graph-vertex-size (grph))
+(defgeneric graph-vertex-size (grph)) ;; DONE
 ;; Return the edge count in a graph.
-(defgeneric graph-edge-size (grph))
+(defgeneric graph-edge-size (grph)) ;; DONE
 ;; Get a vertex with its assigned symbol.
-(defgeneric get-vertex-by-symbol (grph symbol))
+(defgeneric get-vertex-by-symbol (grph symbol)) ;; DONE 
+;; Get a symbol given a vertex
+(defgeneric get-symbol-by-vertex (grph vtrx)) ;; DONE
+
+(defmethod get-symbol-by-vertex ((grph graph) (vrtx vertex))
+  (let ((sv-map (symbol-vertex-table grph)))
+    (labels ((find-key-by-value (key value)
+	       (if (or (= value vrtx) (equal value vrtx))
+		   key))) ;; Ideally only one value matches the key in the table
+      (maphash #'find-key-by-value sv-map))))
+	     
+
+(defmethod vertex-neighbors ((grph graph) (vrtx vertex))
+  (let ((ve-map (vertex-edge-table grph)))
+    (hash-keys (gethash vrtx ve-map))))
+
+(defmethod vertex-neighbors-by-symbol ((grph graph) symbol)
+  (let ((sv-map (symbol-vertex-table grph))
+	(ve-map (vertex-edge-table grph))
+	(result '()))
+    (loop for vrtx-obj in (hash-keys (gethash (gethash symbol sv-map) ve-map)) do
+	 (push vrtx-obj result))
+    result))
+
+(defmethod vertex-neighbors-by-symbol-return-symbols
+    ((grph graph) symbol)
+  (let ((sv-map (symbol-vertex-table grph))
+	(ve-map (vertex-edge-table grph))
+	(result '()))
+    (loop for vrtx-obj in (hash-keys (gethash (gethash symbol sv-map) ve-map)) do 
+	 (push (get-symbol-by-vertex vrtx-obj) result))))
 
 (defmethod get-vertex-by-symbol ((grph graph) symbol)
   (gethash symbol (symbol-vertex-table grph)))
