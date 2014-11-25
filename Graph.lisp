@@ -120,7 +120,8 @@
 		 0
 		 (+ (length (vertex-neighbors-by-symbol grph (car keylist))) 
 		    (edge-counter grph (cdr keylist))))))
-    (edge-counter grph (hash-keys (symbol-vertex-table grph)))))
+    ;; Dividing by two is necessary.  A proof by induction exists.
+    (/ (edge-counter grph (hash-keys (symbol-vertex-table grph))) 2)))
 
 ;; Retrieve a single vertex object given the symbol
 (defmethod get-vertex-by-symbol ((grph graph) symbol)
