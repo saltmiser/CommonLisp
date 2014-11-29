@@ -2,7 +2,7 @@
 (defun hash-keys (hash-table)
   (loop for key being the hash-keys of hash-table collect key))
 
-;; A vertex class which contains a localized value (stored-value) 
+;; A vertex classb which contains a localized value (stored-value) 
 ;; and a hash table which is keyed by other vertices which index
 ;; to edge values (i.e., actual edge objects.)
 (defclass vertex ()
@@ -24,7 +24,15 @@
     :initarg :weight
     :initform (error "You must provide a comparable value applicable to <, >, =, etc.")
     :accessor weight
-    :documentation "The weight of this edge.")))
+    :documentation "The weight of this edge.")
+   (first-vertex
+    :initarg :first-vertex
+    :initform (error "You must provide the first vertex for this two-ended edge.")
+    :documentation "Vertex A.")
+   (second-vertex
+    :initarg :second-vertex
+    :initform (error "You must provide the second vertex for this two-ended edge.")
+    :documentation "Vertex B.")))
 
 (defclass iedge (edge)
   ((connected-nodes
@@ -135,6 +143,19 @@
 	       (if (or (= value vrtx) (equal value vrtx))
 		   key))) ;; Ideally only one value matches the key in the table
       (maphash #'find-key-by-value sv-map))))
-	     
 
+;; Connect two verticies together with a new edge using the 
+;; edge-weight (which needs to be a comparable value which 
+;; responds correctly to =, <, etc.,) on the given graph grph
+(defmethod connect ((grph graph) (first-vrtx vertex) 
+		    (second-vrtx vertex) edge-weight)
+  (let ((v1 first-vrtx)
+	(v2 second-vrtx)
+	(edge-table (vertex-edge-table grph)))
+    (let ((newedge 
+	   (make-instance 'edge
+			  :weight edge-weight)))
+      (setf (gethash edge-table v1)
+	    (append 
+	     (gethash edge-table v1) (list newedge))))))
 
