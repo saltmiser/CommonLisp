@@ -24,15 +24,7 @@
     :initarg :weight
     :initform (error "You must provide a comparable value applicable to <, >, =, etc.")
     :accessor weight
-    :documentation "The weight of this edge.")
-   (first-vertex
-    :initarg :first-vertex
-    :initform (error "You must provide the first vertex for this two-ended edge.")
-    :documentation "Vertex A.")
-   (second-vertex
-    :initarg :second-vertex
-    :initform (error "You must provide the second vertex for this two-ended edge.")
-    :documentation "Vertex B.")))
+    :documentation "The weight of this edge.")))
 
 (defclass iedge (edge)
   ((connected-nodes
@@ -148,14 +140,16 @@
 ;; edge-weight (which needs to be a comparable value which 
 ;; responds correctly to =, <, etc.,) on the given graph grph
 (defmethod connect ((grph graph) (first-vrtx vertex) 
-		    (second-vrtx vertex) edge-weight)
+		    (second-vrtx vertex) new-weight)
   (let ((v1 first-vrtx)
 	(v2 second-vrtx)
-	(edge-table (vertex-edge-table grph)))
+        (et1 (edge-table first-vrtx))
+	(et2 (edge-table second-vrtx)))
     (let ((newedge 
 	   (make-instance 'edge
-			  :weight edge-weight)))
-      (setf (gethash edge-table v1)
-	    (append 
-	     (gethash edge-table v1) (list newedge))))))
+			  :weight new-weight)))
+      ;; Complete the code
+      )))
+
+      
 
